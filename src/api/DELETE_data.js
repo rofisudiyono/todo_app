@@ -1,6 +1,6 @@
 import axios from "./axiosInstance";
 
-export const deleteReports = async (id) => {
+export const deleteActivity = async (id) => {
   return axios
     .delete(`/activity-groups/${id}`)
     .then((response) => {

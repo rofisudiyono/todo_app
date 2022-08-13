@@ -2,26 +2,40 @@ import { Add } from "@mui/icons-material";
 import {
   AppBar,
   Button,
+  Card,
   Container,
   IconButton,
   Toolbar,
   Typography,
 } from "@mui/material";
-import Image from "next/image";
-import { useEffect } from "react";
-import { EmptyState } from "../../public/images";
+import { useEffect, useState } from "react";
 import { getAllActivity } from "../api/GET_allActivity";
 import { postActivity } from "../api/POST_activity";
+import EmptyStateComponent from "./component/EmptyStateComponent";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { format } from "date-fns";
+import { deleteActivity } from "../api/DELETE_data";
 
 export default function Home() {
+  const [dataActivity, setDataActivity] = useState([]);
+
   const getAllData = async () => {
     const response = await getAllActivity();
-    console.log("response", response);
+    setDataActivity(response.data);
   };
 
   const postData = async () => {
     const response = await postActivity();
-    console.log(response);
+    if (response) {
+      getAllData();
+    }
+  };
+
+  const deleteData = async (item) => {
+    const response = await deleteActivity(item.id);
+    if (response) {
+      getAllData();
+    }
   };
 
   useEffect(() => {
@@ -29,21 +43,14 @@ export default function Home() {
   }, []);
 
   return (
-    <div>
-      <AppBar position="static" style={{ backgroundColor: "#16ABF8" }}>
-        <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-          ></IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            TO DO LIST APP
+    <div style={{ backgroundColor: "#E5E5E5", minHeight: "100vh" }}>
+      <div className="bg-primary py-[31px]">
+        <Container>
+          <Typography style={{ fontSize: 24, fontWeight: 700, color: "white" }}>
+            To Do List App
           </Typography>
-        </Toolbar>
-      </AppBar>
+        </Container>
+      </div>
       <Container>
         <div
           style={{
@@ -66,13 +73,35 @@ export default function Home() {
           </Button>
         </div>
         <div style={{ width: "100%" }}>
-          <Button
-            onClick={postData}
-            fullWidth
-            style={{ alignItems: "center", marginTop: 65 }}
-          >
-            <Image src={EmptyState} alt="" height={490} width={767} />
-          </Button>
+          {dataActivity.length === 0 && (
+            <EmptyStateComponent onClick={postActivity} />
+          )}
+          <div className="w-full grid grid-cols-4 gap-4 py-[55px]">
+            {dataActivity?.map((item, index) => {
+              return (
+                <button
+                  key={index}
+                  className="h-[235px] shadow-lg bg-white rounded-[12px]"
+                >
+                  <div className="w-full h-full flex flex-col justify-between py-[22px] px-[26px]">
+                    <div className="flex">
+                      <Typography style={{ fontSize: 18, fontWeight: 700 }}>
+                        {item.title}
+                      </Typography>
+                    </div>
+                    <div className="flex justify-between">
+                      <div>
+                        {format(new Date(item.created_at), "dd MMM yyyy", "id")}
+                      </div>
+                      <button onClick={() => deleteData(item)}>
+                        <DeleteOutlineIcon />
+                      </button>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </Container>
     </div>

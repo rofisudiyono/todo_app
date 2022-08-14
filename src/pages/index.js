@@ -1,23 +1,20 @@
 import { Add } from "@mui/icons-material";
-import {
-  AppBar,
-  Button,
-  Card,
-  Container,
-  IconButton,
-  Toolbar,
-  Typography,
-} from "@mui/material";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { Alert, Button, Container, Snackbar, Typography } from "@mui/material";
+import { format } from "date-fns";
+import Image from "next/image";
 import { useEffect, useState } from "react";
+import { EmptyState, IcInformation } from "../../public/images";
+import { deleteActivity } from "../api/DELETE_data";
 import { getAllActivity } from "../api/GET_allActivity";
 import { postActivity } from "../api/POST_activity";
-import EmptyStateComponent from "./component/EmptyStateComponent";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { format } from "date-fns";
-import { deleteActivity } from "../api/DELETE_data";
-
+import ModalComponent from "./component/ModalComponent";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 export default function Home() {
   const [dataActivity, setDataActivity] = useState([]);
+  const [isShowModalDelete, setIsShowModalDelete] = useState(false);
+  const [isOpenSnackbar, setIsOpenSnackbar] = useState(false);
+  const [idActivity, setIdActivity] = useState("");
 
   const getAllData = async () => {
     const response = await getAllActivity();
@@ -31,9 +28,11 @@ export default function Home() {
     }
   };
 
-  const deleteData = async (item) => {
-    const response = await deleteActivity(item.id);
+  const deleteData = async () => {
+    const response = await deleteActivity(idActivity);
     if (response) {
+      setIsShowModalDelete(false);
+      setIsOpenSnackbar(true);
       getAllData();
     }
   };
@@ -46,7 +45,10 @@ export default function Home() {
     <div style={{ backgroundColor: "#E5E5E5", minHeight: "100vh" }}>
       <div className="bg-primary py-[31px]">
         <Container>
-          <Typography style={{ fontSize: 24, fontWeight: 700, color: "white" }}>
+          <Typography
+            style={{ fontSize: 24, fontWeight: 700, color: "white" }}
+            textTransform="uppercase"
+          >
             To Do List App
           </Typography>
         </Container>
@@ -69,12 +71,20 @@ export default function Home() {
             style={{ backgroundColor: "#16ABF8", borderRadius: 45 }}
             startIcon={<Add />}
           >
-            <Typography fontSize={18}>Tambah</Typography>
+            <Typography fontSize={18} textTransform="capitalize">
+              Tambah
+            </Typography>
           </Button>
         </div>
         <div style={{ width: "100%" }}>
-          {dataActivity.length === 0 && (
-            <EmptyStateComponent onClick={postActivity} />
+          {!dataActivity.length && (
+            <Button
+              onClick={postData}
+              fullWidth
+              style={{ alignItems: "center", marginTop: 65 }}
+            >
+              <Image src={EmptyState} alt="" height={490} width={767} />
+            </Button>
           )}
           <div className="w-full grid grid-cols-4 gap-4 py-[55px]">
             {dataActivity?.map((item, index) => {
@@ -93,7 +103,12 @@ export default function Home() {
                       <div>
                         {format(new Date(item.created_at), "dd MMM yyyy", "id")}
                       </div>
-                      <button onClick={() => deleteData(item)}>
+                      <button
+                        onClick={() => {
+                          setIdActivity(item.id);
+                          setIsShowModalDelete(true);
+                        }}
+                      >
                         <DeleteOutlineIcon />
                       </button>
                     </div>
@@ -104,6 +119,27 @@ export default function Home() {
           </div>
         </div>
       </Container>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={isOpenSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setIsOpenSnackbar(false)}
+      >
+        <div className="bg-white shadow-md h-[58px] w-[400px] items-center rounded-[12px] flex px-[30px]">
+          <div className="mr-[13px] flex items-center">
+            <Image src={IcInformation} alt="" height={18} width={18} />
+          </div>
+          <Typography fontSize={14} fontWeight="600">
+            Activity berhasil dihapus
+          </Typography>
+        </div>
+      </Snackbar>
+      <ModalComponent
+        open={isShowModalDelete}
+        onClose={() => setIsShowModalDelete(false)}
+        onPressDelete={() => deleteData()}
+        onPressCancel={() => setIsShowModalDelete(false)}
+      />
     </div>
   );
 }

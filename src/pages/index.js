@@ -9,7 +9,9 @@ import { deleteActivity } from "../api/DELETE_data";
 import { getAllActivity } from "../api/GET_allActivity";
 import { postActivity } from "../api/POST_activity";
 import ModalComponent from "./component/ModalComponent";
+import { useRouter } from "next/router";
 export default function Home() {
+  const router = useRouter()
   const [dataActivity, setDataActivity] = useState([]);
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
   const [isOpenSnackbar, setIsOpenSnackbar] = useState(false);
@@ -89,6 +91,7 @@ export default function Home() {
             {dataActivity?.map((item, index) => {
               return (
                 <button
+                  onClick={() => router.push(`/detail/${item.id}`)}
                   key={index}
                   className="h-[235px] shadow-lg bg-white rounded-[12px]"
                 >

@@ -11,7 +11,7 @@ import { postActivity } from "../api/POST_activity";
 import ModalComponent from "./component/ModalComponent";
 import { useRouter } from "next/router";
 export default function Home() {
-  const router = useRouter()
+  const router = useRouter();
   const [dataActivity, setDataActivity] = useState([]);
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
   const [isOpenSnackbar, setIsOpenSnackbar] = useState(false);
@@ -90,22 +90,25 @@ export default function Home() {
           <div className="w-full grid grid-cols-4 gap-4 py-[55px]">
             {dataActivity?.map((item, index) => {
               return (
-                <button
-                  onClick={() => router.push(`/detail/${item.id}`)}
+                <div
                   key={index}
                   className="h-[235px] shadow-lg bg-white rounded-[12px]"
                 >
                   <div className="w-full h-full flex flex-col justify-between py-[22px] px-[26px]">
-                    <div className="flex">
+                    <button
+                      onClick={() => router.push(`/detail/${item.id}`)}
+                      className="flex flex-1"
+                    >
                       <Typography style={{ fontSize: 18, fontWeight: 700 }}>
                         {item.title}
                       </Typography>
-                    </div>
+                    </button>
                     <div className="flex justify-between">
                       <div>
                         {format(new Date(item.created_at), "dd MMM yyyy", "id")}
                       </div>
                       <button
+                        className="h-8 w-8"
                         onClick={() => {
                           setIdActivity(item.id);
                           setIsShowModalDelete(true);
@@ -115,7 +118,7 @@ export default function Home() {
                       </button>
                     </div>
                   </div>
-                </button>
+                </div>
               );
             })}
           </div>

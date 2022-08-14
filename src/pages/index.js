@@ -1,6 +1,6 @@
 import { Add } from "@mui/icons-material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { Alert, Button, Container, Snackbar, Typography } from "@mui/material";
+import { Button, Container, Snackbar, Typography } from "@mui/material";
 import { format } from "date-fns";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -9,7 +9,6 @@ import { deleteActivity } from "../api/DELETE_data";
 import { getAllActivity } from "../api/GET_allActivity";
 import { postActivity } from "../api/POST_activity";
 import ModalComponent from "./component/ModalComponent";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 export default function Home() {
   const [dataActivity, setDataActivity] = useState([]);
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
@@ -120,10 +119,11 @@ export default function Home() {
         </div>
       </Container>
       <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
         open={isOpenSnackbar}
-        autoHideDuration={6000}
+        autoHideDuration={3000}
         onClose={() => setIsOpenSnackbar(false)}
+        style={{ marginTop: 80 }}
       >
         <div className="bg-white shadow-md h-[58px] w-[400px] items-center rounded-[12px] flex px-[30px]">
           <div className="mr-[13px] flex items-center">

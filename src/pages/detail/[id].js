@@ -1,13 +1,39 @@
 import { Add } from "@mui/icons-material";
-import { Button, Container, Snackbar, Typography } from "@mui/material";
+import {
+  Button,
+  Container,
+  Snackbar,
+  TextField,
+  Typography,
+} from "@mui/material";
 import Image from "next/image";
-import React, { useState } from "react";
-import { IcInformation } from "../../../public/images";
+import React, { useEffect, useState } from "react";
+import { IcInformation, TodoEmptyState } from "../../../public/images";
 import ModalComponent from "../component/ModalComponent";
-
+import { useRouter } from "next/router";
+import { getAllActivityDetail } from "../../api/GET_allActivityDetail";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 export default function DetailActivity() {
+  const router = useRouter();
+  const { id } = router.query;
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
   const [isOpenSnackbar, setIsOpenSnackbar] = useState(false);
+  const [activityDetail, setActivityDetail] = useState({});
+  const [editTitle, setEditTitle] = useState(false);
+  console.log(editTitle);
+  const [title, setTitle] = useState("");
+
+  const getDataDetail = async () => {
+    const response = await getAllActivityDetail(id);
+    if (response) setActivityDetail(response);
+    else return;
+  };
+
+  useEffect(() => {
+    getDataDetail();
+  }, []);
+
   return (
     <div style={{ backgroundColor: "#E5E5E5", minHeight: "100vh" }}>
       <div className="bg-primary py-[31px]">
@@ -28,9 +54,37 @@ export default function DetailActivity() {
             marginTop: 43,
           }}
         >
-          <Typography style={{ fontSize: 36, fontWeight: 700 }}>
-            New Activity
-          </Typography>
+          <div className="flex">
+            <button onClick={() => router.push("/")}>
+              <ArrowBackIosIcon style={{ height: 32, width: 32 }} />
+            </button>
+            {editTitle ? (
+              <TextField
+                id="standard-basic"
+                hiddenLabel
+                variant="standard"
+                size="medium"
+                style={{ fontSize: 46 }}
+              />
+            ) : (
+              <Typography
+                style={{
+                  fontSize: 36,
+                  fontWeight: 700,
+                  marginLeft: 19,
+                  marginRight: 19,
+                }}
+              >
+                {activityDetail.title}
+              </Typography>
+            )}
+
+            <button onClick={() => setEditTitle(!editTitle)}>
+              <EditOutlinedIcon
+                style={{ height: 24, width: 24, color: "#A4A4A4" }}
+              />
+            </button>
+          </div>
           <Button
             onClick={() => undefined}
             size="medium"
@@ -41,6 +95,15 @@ export default function DetailActivity() {
             <Typography fontSize={18} textTransform="capitalize">
               Tambah
             </Typography>
+          </Button>
+        </div>
+        <div>
+          <Button
+            onClick={() => undefined}
+            fullWidth
+            style={{ alignItems: "center", marginTop: 65 }}
+          >
+            <Image src={TodoEmptyState} alt="" height={413} width={541} />
           </Button>
         </div>
       </Container>

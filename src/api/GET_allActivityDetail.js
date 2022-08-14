@@ -1,6 +1,6 @@
 import axios from "./axiosInstance";
 
-export const getAllActivity = async (id) => {
+export const getAllActivityDetail = async (id) => {
   return axios
     .get(`/activity-groups/${id}`)
     .then((response) => {
